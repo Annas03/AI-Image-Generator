@@ -30,4 +30,25 @@ const createImage = async (req, res) =>{
     // res.then(()=>console.log('success')).catch((err) => console.log(err))
 }
 
-module.exports = {createImage}
+const shareImage = async (req, res) => {
+  try {
+    if (req.body.name && req.body.prompt && req.body.photo){
+      const task = await Image.create(req.body)
+      return res.status(200).json(task)
+    }
+    return res.status(500).json({error: "Information In complete"})
+  } catch (error) {
+    res.status(400).json(error.errors.task.message)
+  }
+}
+
+const getImage = async (req, res) => {
+  try {
+    const posts = await Image.find()
+    res.status(200).json({posts:posts})
+  } catch (error) {
+    res.status(500).json({err: error})
+  }
+}
+
+module.exports = {createImage, shareImage, getImage}

@@ -1,10 +1,21 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
 import FormField from './FormField'
 import ShowCase from './ShowCase'
 
 const Home = () => {
   const [imgList, setImgList] = useState(null)
+
+  useEffect(() => {
+    async function fetchPosts(){
+      const postList = await fetch('http://localhost:5000/api/v1/get')
+      const data = await postList.json()
+      // setImgList(data.posts)
+      console.log(data.posts)
+    }
+    fetchPosts()
+  },[])
+
   return (
     <div className='bg-[#f9fafe] h-screen border border-t-slate-200'>
         <div className='pt-8 w-11/12 mx-auto max-w-7xl'>
