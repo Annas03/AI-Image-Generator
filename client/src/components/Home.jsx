@@ -10,8 +10,7 @@ const Home = () => {
     async function fetchPosts(){
       const postList = await fetch('http://localhost:5000/api/v1/get')
       const data = await postList.json()
-      // setImgList(data.posts)
-      console.log(data.posts)
+      setImgList(data.posts)
     }
     fetchPosts()
   },[])
@@ -24,7 +23,7 @@ const Home = () => {
         </div>
         <FormField/>
         {!imgList ? <h4 className='pt-4 w-11/12 mx-auto'>No Item to Showcase</h4>:<div className='pt-8 w-11/12 mx-auto grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 max-w-7xl grid-cols-1'>
-          <ShowCase/>
+          {imgList.map((img) => <ShowCase key={img._id} photo={img.photo} name={img.name}/>)}
         </div>}
     </div>
   )
