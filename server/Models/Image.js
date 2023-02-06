@@ -5,5 +5,4 @@ const ImageSchema = mongoose.Schema({
     img:String
 })
 
-const Image = mongoose.model("Image", ImageSchema)
-export default Image
+module.exports = mongoose.model("Image", ImageSchema)
