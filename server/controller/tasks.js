@@ -1,15 +1,16 @@
 const { Configuration, OpenAIApi } = require("openai");
 const cloudinary = require('cloudinary').v2;
 const Image = require('../Models/Image')
+const download = require('image-downloader');
 
 require('dotenv').config()
 
 // Cloudinary Configuration 
-// cloudinary.config({
-//   cloud_name: "dxl2vlar6",
-//   api_key: process.env.CLOUD_API_KEY,
-//   api_secret: process.env.CLOUD_API_SECRET
-// });
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET
+});
 
 const createImage = async (req, res) =>{
   // OPENAI Configuration
@@ -22,18 +23,18 @@ const createImage = async (req, res) =>{
       prompt: req.body.prompt,
       n:1,
       size: "512x512",
+      response_format: "b64_json",
     });
 
-    res.status(200).json({photo: response.data.data[0].url})
-    
-    // const res = cloudinary.uploader.upload(response.data.data[0].b64_json, {public_id: req.body.prompt})
-    // res.then(()=>console.log('success')).catch((err) => console.log(err))
+    res.status(200).json({photo: response.data.data[0].b64_json})
 }
 
 const shareImage = async (req, res) => {
   try {
     if (req.body.name && req.body.prompt && req.body.photo){
-      const task = await Image.create(req.body)
+      const photoURL = await cloudinary.uploader.upload(req.body.photo)
+      
+      const task = await Image.create({name:req.body.name, prompt: req.body.prompt, photo:photoURL.url})
       return res.status(200).json(task)
     }
     return res.status(500).json({error: "Information In complete"})
@@ -51,4 +52,19 @@ const getImage = async (req, res) => {
   }
 }
 
-module.exports = {createImage, shareImage, getImage}
+const downloadImage = async (req, res) => {
+  const user = await Image.findOne({name: req.body.name})
+  if(user){
+    const options = {
+      url: user.photo,
+      dest: '/Downloads',               // will be saved to /path/to/dest/image.jpg
+    };
+    download.image(options)
+      .then(({ filename }) => {
+        res.status(200).send("Successfully Download") // saved to /path/to/dest/image.jpg
+      })
+      .catch((err) => res.status(400).send(err));
+  }
+}
+
+module.exports = {createImage, shareImage, getImage, downloadImage}
