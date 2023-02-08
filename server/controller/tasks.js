@@ -53,7 +53,7 @@ const getImage = async (req, res) => {
 }
 
 const downloadImage = async (req, res) => {
-  const user = await Image.findOne({name: req.body.name})
+  const user = await Image.findOne({_id: req.body._id})
   if(user){
     const options = {
       url: user.photo,

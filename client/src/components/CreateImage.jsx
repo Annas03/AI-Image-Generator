@@ -78,7 +78,7 @@ const CreateImage = () => {
         <img src={generatingImage ? loader: photo} className="w-80 mt-7 max-w-xs border-2 rounded"/>
         {generatingImage ? <button className='border rounded bg-green-800 py-2 px-4 text-white font-semibold mt-4'disabled >Generating...</button> : <button className='border rounded bg-green-600 py-2 px-4 text-white font-semibold mt-4' onClick={generateImage} >Generate</button>}
         <p className='mt-6 text-slate-600'>** Once you have created the image you want, you can share it with others in the community **</p>
-        {sharingImage ? <button className='border rounded bg-blue-800 py-2 px-4 text-white font-semibold mt-2 mb-6' disabled>Sharing with the Community</button>:
+        {sharingImage ? <button className='border rounded bg-blue-800 py-2 px-4 text-white font-semibold mt-2 mb-6' disabled>Sharing...</button>:
         <button type='submit' className='border rounded bg-blue-500 py-2 px-4 text-white font-semibold mt-2 mb-6' onClick={shareImage}>Share with the Community</button>}
       </form>
     </div>
