@@ -1,5 +1,5 @@
 const express = require('express')
-const {createImage, shareImage, getImage, downloadImage} = require('./controller/tasks')
+const {createImage, shareImage, getImage} = require('./controller/tasks')
 const connectDB = require('../server/db/connect')
 const cors = require('cors')
 const app = express()
@@ -11,7 +11,6 @@ app.use(cors())
 app.post("/api/v1/post", createImage)
 app.post("/api/v1/share", shareImage)
 app.get("/api/v1/get", getImage)
-app.post("/api/v1/download", downloadImage)
 
 const start = async () => {
     try {

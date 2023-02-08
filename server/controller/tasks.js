@@ -1,7 +1,6 @@
 const { Configuration, OpenAIApi } = require("openai");
 const cloudinary = require('cloudinary').v2;
 const Image = require('../Models/Image')
-const download = require('image-downloader');
 
 require('dotenv').config()
 
@@ -52,19 +51,4 @@ const getImage = async (req, res) => {
   }
 }
 
-const downloadImage = async (req, res) => {
-  const user = await Image.findOne({_id: req.body._id})
-  if(user){
-    const options = {
-      url: user.photo,
-      dest: '/Downloads',               // will be saved to /path/to/dest/image.jpg
-    };
-    download.image(options)
-      .then(({ filename }) => {
-        res.status(200).send("Successfully Download") // saved to /path/to/dest/image.jpg
-      })
-      .catch((err) => res.status(400).send(err));
-  }
-}
-
-module.exports = {createImage, shareImage, getImage, downloadImage}
+module.exports = {createImage, shareImage, getImage}
