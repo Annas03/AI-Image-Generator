@@ -34,7 +34,7 @@ const shareImage = async (req, res) => {
       const photoURL = await cloudinary.uploader.upload(req.body.photo)
       
       const task = await Image.create({name:req.body.name, prompt: req.body.prompt, photo:photoURL.url})
-      return res.status(200).json(task)
+      return res.status(200).json({userentry: task})
     }
     return res.status(500).json({error: "Information In complete"})
   } catch (error) {

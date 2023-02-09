@@ -1,6 +1,6 @@
 const express = require('express')
 const {createImage, shareImage, getImage} = require('./controller/tasks')
-const connectDB = require('../server/db/connect')
+const connectDB = require('./db/connect')
 const cors = require('cors')
 const app = express()
 PORT = process.env.PORT || 5000
@@ -8,9 +8,12 @@ PORT = process.env.PORT || 5000
 app.use(express.json({limit: '50mb'}));
 app.use(cors())
 
-app.post("/api/v1/post", createImage)
-app.post("/api/v1/share", shareImage)
-app.get("/api/v1/get", getImage)
+app.post("/.netlify/functions/api/post", createImage)
+app.post("/.netlify/functions/api/share", shareImage)
+app.get("/.netlify/functions/api/get", getImage)
+app.get("/", (req, res) => {
+    res.send("Server is Running...")
+})
 
 const start = async () => {
     try {

@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon functions/api.js",
+    "build": "netlify deploy --prod"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +20,10 @@
     "file-saver": "^2.0.5",
     "image-downloader": "^4.3.0",
     "mongoose": "^6.9.0",
+    "netlify-cli": "^12.10.0",
+    "netlify-lambda": "^2.0.15",
     "nodemon": "^2.0.20",
-    "openai": "^3.1.0"
+    "openai": "^3.1.0",
+    "serverless-http": "^3.1.1"
   }
 }
