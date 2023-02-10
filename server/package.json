@@ -2,11 +2,12 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "/functions/api.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node api.js",
-    "dev": "nodemon api.js"
+    "start": "node ./functions/api.js",
+    "dev": "nodemon ./functions/api.js",
+    "build": "netlify deploy --prod"
   },
   "keywords": [],
   "author": "",

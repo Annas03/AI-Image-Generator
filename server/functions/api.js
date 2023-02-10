@@ -1,6 +1,7 @@
 const express = require('express')
-const {createImage, shareImage, getImage} = require('./controller/tasks')
-const connectDB = require('./db/connect')
+const {createImage, shareImage, getImage} = require('../controller/tasks')
+const serverless = require('serverless-http')
+const connectDB = require('../db/connect')
 const cors = require('cors')
 const app = express()
 PORT = process.env.PORT || 5000
@@ -8,10 +9,10 @@ PORT = process.env.PORT || 5000
 app.use(express.json({limit: '50mb'}));
 app.use(cors())
 
-app.post("/api/v1/post", createImage)
-app.post("/api/v1/share", shareImage)
-app.get("/api/v1/get", getImage)
-app.get("/", (req, res) => {
+app.post("/.netlify/functions/api/post", createImage)
+app.post("/.netlify/functions/api/share", shareImage)
+app.get("/.netlify/functions/api/get", getImage)
+app.get("/.netlify/functions/api/", (req, res) => {
     res.send("Server is Running...")
 })
 
@@ -26,4 +27,6 @@ const start = async () => {
     }
 }
 
-start()
+module.exports.handler = serverless(app)
+
+// start()
