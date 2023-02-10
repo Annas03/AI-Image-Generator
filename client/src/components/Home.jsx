@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { useState } from 'react'
+import BASE_URL from '../../../server/config'
 import {loader} from '../assets/index'
 import FormField from './FormField'
 import ShowCase from './ShowCase'
@@ -9,7 +10,7 @@ const Home = () => {
 
   useEffect(() => {
     async function fetchPosts(){
-      const postList = await fetch('https://ai-image-backend.netlify.app/.netlify/functions/api/get',{
+      const postList = await fetch(`${BASE_URL}/.netlify/functions/api/get`,{
         headers:{'Access-Control-Allow-Origin': '*'}
       })
       const data = await postList.json()

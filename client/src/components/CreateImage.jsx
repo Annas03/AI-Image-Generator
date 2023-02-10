@@ -3,6 +3,9 @@ import { useState } from 'react'
 import {useNavigate} from "react-router-dom"
 import {preview, loader} from '../assets/index'
 import {surpriseMePrompts} from "../constants/index"
+import dotenv from 'dotenv'
+import BASE_URL from '../../../server/config'
+dotenv.config()
 
 const CreateImage = () => {
   const [prompt, setPrompt] = useState("")
@@ -21,7 +24,7 @@ const CreateImage = () => {
     setgeneratingImage((prevState)=>!prevState)
     try{
       if(prompt!=""){
-        const response = await fetch('http:localhost:5000/.netlify/functions/api/post', {
+        const response = await fetch(`${BASE_URL}/.netlify/functions/api/post`, {
           method:'POST',
           headers:{
             'Content-Type': 'application/json',
@@ -46,7 +49,7 @@ const CreateImage = () => {
     e.preventDefault()
     try{
       if(name!="" && prompt!="" && photo){
-        const response = await fetch('httphttp:localhost:5000/.netlify/functions/api/share',{
+        const response = await fetch(`${BASE_URL}/.netlify/functions/api/share`,{
           method:'POST',
           headers:{
             'Content-Type': 'application/json',
