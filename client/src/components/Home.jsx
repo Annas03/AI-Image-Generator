@@ -9,7 +9,9 @@ const Home = () => {
 
   useEffect(() => {
     async function fetchPosts(){
-      const postList = await fetch('https://ai-image-backend.netlify.app/.netlify/functions/api/get')
+      const postList = await fetch('https://ai-image-backend.netlify.app/.netlify/functions/api/get',{
+        headers:{'Access-Control-Allow-Origin': '*'}
+      })
       const data = await postList.json()
       setImgList(data.posts)
     }

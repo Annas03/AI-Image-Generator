@@ -21,10 +21,11 @@ const CreateImage = () => {
     setgeneratingImage((prevState)=>!prevState)
     try{
       if(prompt!=""){
-        const response = await fetch('https://ai-image-backend.netlify.app/.netlify/functions/api/post', {
+        const response = await fetch('http:localhost:5000/.netlify/functions/api/post', {
           method:'POST',
           headers:{
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
           },
           body: JSON.stringify({prompt: prompt, name:name})
         })
@@ -45,10 +46,11 @@ const CreateImage = () => {
     e.preventDefault()
     try{
       if(name!="" && prompt!="" && photo){
-        const response = await fetch('https://ai-image-backend.netlify.app/.netlify/functions/api/share',{
+        const response = await fetch('httphttp:localhost:5000/.netlify/functions/api/share',{
           method:'POST',
           headers:{
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
           },
           body: JSON.stringify({name: name, prompt:prompt, photo: photo})
         })

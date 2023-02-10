@@ -1,22 +1,27 @@
+require('dotenv').config()
 const express = require('express')
 const {createImage, shareImage, getImage} = require('../functions/controller/tasks')
 const serverless = require('serverless-http')
 const dbConfig = require("../functions/db/connect");
 const cors = require('cors')
 const app = express()
+
+app.use(cors())
+
+
 PORT = process.env.PORT || 5000
+const BASE_URL = require("../config/index")
 
 app.use(express.json({limit: '50mb'}));
-app.use(cors())
 
 app.listen(PORT, ()=>{
     console.log("server is listning...")
 })
 
-app.post("/.netlify/functions/api/post", createImage)
-app.post("/.netlify/functions/api/share", shareImage)
-app.get("/.netlify/functions/api/get", getImage)
-app.get("/.netlify/functions/api/", (req, res) => {
+app.post(`${BASE_URL}/post`, createImage)
+app.post(`${BASE_URL}/share`, shareImage)
+app.get(`${BASE_URL}/get`, getImage)
+app.get(`${BASE_URL}/`, (req, res) => {
     res.send("Server is Running...")
 })
 
