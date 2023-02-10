@@ -9,16 +9,17 @@ PORT = process.env.PORT || 5000
 app.use(express.json({limit: '50mb'}));
 app.use(cors())
 
-app.post("/api/post", createImage)
-app.post("/api/share", shareImage)
-app.get("/api/get", getImage)
-app.get("/api/", (req, res) => {
+app.listen(PORT, ()=>{
+    console.log("server is listning...")
+})
+
+app.post("/.netlify/functions/api/post", createImage)
+app.post("/.netlify/functions/api/share", shareImage)
+app.get("/.netlify/functions/api/get", getImage)
+app.get("/.netlify/functions/api/", (req, res) => {
     res.send("Server is Running...")
 })
 
-app.listen(PORT, ()=>{
-        console.log("server is listning...")
-    })
 
 // const start = async () => {
 //     try {
@@ -32,8 +33,8 @@ app.listen(PORT, ()=>{
 // }
 
 // start()
-// const handler = serverless(app);
-// module.exports.handler = async (event, context) => {
-//   const result = await handler(event, context);
-//   return result;
-// };
+const handler = serverless(app);
+module.exports.handler = async (event, context) => {
+  const result = await handler(event, context);
+  return result;
+};

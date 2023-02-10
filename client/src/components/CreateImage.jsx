@@ -21,7 +21,7 @@ const CreateImage = () => {
     setgeneratingImage((prevState)=>!prevState)
     try{
       if(prompt!=""){
-        const response = await fetch('http://localhost:5000/api/v1/post', {
+        const response = await fetch('https://ai-image-backend.netlify.app/.netlify/functions/api/post', {
           method:'POST',
           headers:{
             'Content-Type': 'application/json'
@@ -45,7 +45,7 @@ const CreateImage = () => {
     e.preventDefault()
     try{
       if(name!="" && prompt!="" && photo){
-        const response = await fetch('http://localhost:5000/api/v1/share',{
+        const response = await fetch('https://ai-image-backend.netlify.app/.netlify/functions/api/share',{
           method:'POST',
           headers:{
             'Content-Type': 'application/json'

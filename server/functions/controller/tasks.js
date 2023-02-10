@@ -36,7 +36,7 @@ const shareImage = async (req, res) => {
   try {
     if (req.body.name && req.body.prompt && req.body.photo){
       const photoURL = await cloudinary.uploader.upload(req.body.photo)
-      
+      console.log(photoURL)
       const task = await Image.create({name:req.body.name, prompt: req.body.prompt, photo:photoURL.url})
       return res.status(200).json({userentry: task})
     }

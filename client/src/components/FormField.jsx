@@ -12,7 +12,7 @@ function FormField({imgList, setImgList}) {
   }
 
   const getAllImages = async () => {
-    const postList = await fetch('http://localhost:5000/api/v1/get')
+    const postList = await fetch('https://ai-image-backend.netlify.app/.netlify/functions/api/get')
       const data = await postList.json()
       return data.posts
   }
