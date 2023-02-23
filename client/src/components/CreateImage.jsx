@@ -3,20 +3,15 @@ import { useState } from 'react'
 import {useNavigate} from "react-router-dom"
 import {preview, loader} from '../assets/index'
 import {surpriseMePrompts} from "../constants/index"
-import dotenv from 'dotenv'
-import BASE_URL from '../../../server/config'
-dotenv.config()
 
-const CreateImage = () => {
+const CreateImage = ({setImages, userName}) => {
   const [prompt, setPrompt] = useState("")
-  const [name, setName] = useState("")
   const [photo, setPhoto] = useState(preview)
   const [generatingImage, setgeneratingImage] = useState(false)
   const [sharingImage, setSharingImage] = useState(false)
   const navigate = useNavigate();
 
-  const randomPrompt = (e) => {
-    e.preventDefault()
+  const randomPrompt = () => {
     setPrompt(surpriseMePrompts[Math.floor(Math.random() * 50)])
   }
 
@@ -24,13 +19,13 @@ const CreateImage = () => {
     setgeneratingImage((prevState)=>!prevState)
     try{
       if(prompt!=""){
-        const response = await fetch(`${BASE_URL}/.netlify/functions/api/post`, {
+        const response = await fetch(`https://ai-image-backend.netlify.app/.netlify/functions/api/post`, {
           method:'POST',
           headers:{
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*'
           },
-          body: JSON.stringify({prompt: prompt, name:name})
+          body: JSON.stringify({prompt: prompt, name:userName})
         })
         const data = await response.json()
         setPhoto(`data:image/jpeg;base64,${data.photo}`)
@@ -48,14 +43,14 @@ const CreateImage = () => {
     setSharingImage((prevState) => !prevState)
     e.preventDefault()
     try{
-      if(name!="" && prompt!="" && photo){
-        const response = await fetch(`${BASE_URL}/.netlify/functions/api/share`,{
+      if(userName!="" && prompt!="" && photo){
+        const response = await fetch(`https://ai-image-backend.netlify.app/.netlify/functions/api/share`,{
           method:'POST',
           headers:{
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*'
           },
-          body: JSON.stringify({name: name, prompt:prompt, photo: photo})
+          body: JSON.stringify({name: userName, prompt:prompt, photo: photo})
         })
         navigate('/')
       }
@@ -64,6 +59,7 @@ const CreateImage = () => {
       alert("Form Invalid/Incomplete")
     }
     finally{
+      setImages((prevState) => prevState+=1)
       setSharingImage((prevState) => !prevState)
     }
   }
@@ -74,9 +70,9 @@ const CreateImage = () => {
         <h1 className='font-bold text-3xl'>Create</h1>
         <p className='text-slate-500'>Generate an imaginative image through DALL-E AI and share it with the community</p>
       </div>
-      <form className='pt-8 w-11/12 mx-auto max-w-7xl'>
+      <div className='pt-8 w-11/12 mx-auto max-w-7xl'>
         <label>Your Name</label><br/>
-        <input className='border border-slate-400 w-full rounded text-sm p-2 mt-2 focus:outline-none mb-4' value={name} onChange={(e) => setName(e.target.value)} placeholder='e.g John Doe' required/>
+        <input className='border text-slate-400 border-slate-400 w-full rounded text-sm p-2 mt-2 focus:outline-none mb-4' value={userName} placeholder='e.g John Doe' readonly/>
         <label>Prompt</label>
         <button className='ml-2 border rounded text-sm bg-[#EcECF1] font-semibold px-2' onClick={randomPrompt}>surprise me</button><br/>
         <input name='text-area' className='border border-slate-400 w-full rounded text-sm p-2 mt-2 focus:outline-none ' placeholder='Surprise Me' value={prompt} onChange={(e)=>setPrompt(e.target.value)} required/>
@@ -85,7 +81,7 @@ const CreateImage = () => {
         <p className='mt-6 text-slate-600'>** Once you have created the image you want, you can share it with others in the community **</p>
         {sharingImage ? <button className='border rounded bg-blue-800 py-2 px-4 text-white font-semibold mt-2 mb-6' disabled>Sharing...</button>:
         <button type='submit' className='border rounded bg-blue-500 py-2 px-4 text-white font-semibold mt-2 mb-6' onClick={shareImage}>Share with the Community</button>}
-      </form>
+      </div>
     </div>
   )
 }
