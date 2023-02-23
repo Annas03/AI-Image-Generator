@@ -1,10 +1,7 @@
 const { Configuration, OpenAIApi } = require("openai");
 const cloudinary = require('cloudinary').v2;
 const Image = require('../Models/Image')
-
-// const { MongoClient } = require("mongodb");
-// const mongoClient = new MongoClient(process.env.MONGODB_URL);
-// const clientPromise = mongoClient.connect();
+const User = require('../Models/User')
 
 require('dotenv').config()
 
@@ -54,4 +51,24 @@ const getImage = async (req, res) => {
   }
 }
 
-module.exports = {createImage, shareImage, getImage}
+const signUp = async (req, res) => {
+  const {email, password, name} = req.body
+  try {
+    const user = await User.Signup(email, password, name)
+    res.status(200).json({user})
+  } catch (error) {
+    res.status(406).json({error})
+  }
+}
+
+const login = async (req, res) => {
+  const {email, password} = req.body
+  try {
+    const user = await User.Login(email, password)
+    res.status(200).json({user})
+  } catch (error) {
+    res.status(406).json({error})
+  }
+}
+
+module.exports = {createImage, shareImage, getImage, signUp, login}
