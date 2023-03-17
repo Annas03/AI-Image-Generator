@@ -8,7 +8,8 @@ const ImageSchema = mongoose.Schema({
         maxlength:[20,"should not exceed 20 characters"]
     },
     prompt:String,
-    photo:String
+    photo:String,
+    Likes:{type:Number}
 })
 
 module.exports = mongoose.model("Image", ImageSchema)
