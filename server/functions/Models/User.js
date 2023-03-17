@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
-const bcrypt = require('bcrypt')
+const bcryptjs = require('bcryptjs')
 
 const UserSchema = mongoose.Schema({
     name:{
@@ -16,7 +16,8 @@ const UserSchema = mongoose.Schema({
     password:{
         type:String,
         required:true
-    }
+    },
+    likedImages:{type:Array}
 })
 
 UserSchema.statics.Login = async function Login(email, password){
@@ -30,7 +31,7 @@ UserSchema.statics.Login = async function Login(email, password){
     if(!user){
         throw('Email not found')
     }
-    const match = await bcrypt.compare(password, user.password)
+    const match = bcryptjs.compareSync(password, user.password);
 
     if(!match){
         throw('Password Incorrect') 
@@ -53,8 +54,8 @@ UserSchema.statics.Signup = async function Signup(email, password, name){
     if(match){
         throw('Email is already present')
     }
-    const salt = await bcrypt.genSalt(10)
-    const hash = await bcrypt.hash(password, salt)
+    const salt = bcryptjs.genSaltSync(10);
+    const hash = bcryptjs.hashSync(password, salt)
     const user = await this.create({email,password:hash, name})
 
     return user
