@@ -7,6 +7,7 @@ A Web app which generate Images of user-defined prompt. OpenAI's API is used to 
 - Users can download others AI generated images
 - User Authentication and Authorization
 - Pagination
+- Users can Like others Posts
 
 ## Preview
 
