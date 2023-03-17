@@ -4,11 +4,19 @@ import {loader} from '../assets/index'
 import ShowCase from './ShowCase'
 import { Pagination } from 'antd';
 
-const Home = ({images, setImages}) => {
+const Home = ({images, setImages, userName}) => {
   const [imgList, setImgList] = useState(null)
   const allImgList = useRef(0)
+  const [likedPhotos, setLikedPhotos] = useState([])
   const[ImageSearch, setImageSearch] = useState("")
   const [pageIndex, setPageIndex] = useState(1)
+
+  async function likedImages(){
+    const likesList = await fetch(`https://ai-image-backend.netlify.app/.netlify/functions/api/get/${userName}`,{headers:{'Access-Control-Allow-Origin': '*'}})
+    const dat = await likesList.json()
+    console.log(dat)
+    setLikedPhotos(dat)
+  }
 
   useEffect(() => {
     async function fetchPosts(){
@@ -17,14 +25,21 @@ const Home = ({images, setImages}) => {
       })
       const data = await postList.json() 
       allImgList.current = data.posts
-
       setImages(data.posts.length)
       setImgList(data.posts.reverse().slice(0,(images < 16) ? images: 16))
+      if(userName){
+        await likedImages()
+      }
     }
     fetchPosts()
   },[])
 
-  const changePage = (page, pageSize) => {
+  const changePage = async (page, pageSize) => {
+    const postList = await fetch(`https://ai-image-backend.netlify.app/.netlify/functions/api/get`,{
+      headers:{'Access-Control-Allow-Origin': '*'}
+    });
+    const data = await postList.json();
+    allImgList.current = data.posts.reverse();
     setPageIndex(page)
     setImgList(allImgList.current.filter((img) => img.prompt.search(ImageSearch) != -1).slice(16*(page-1),(16*(page-1) + 16) > images ? images  : 16*(page-1) + 16))
   }
@@ -45,10 +60,10 @@ const Home = ({images, setImages}) => {
         </div>
         <form className='pt-8 w-11/12 mx-auto max-w-7xl'>
           <label>Search posts</label><br/>
-          <input name='text-area' className='border border-slate-400 w-full rounded text-sm p-2 mt-2 focus:outline-none text-slate-500' value={ImageSearch} onChange={filteredSearch} placeholder='Search Something..'/>
+          <input name='text-area' className='border border-slate-400 w-full rounded text-sm p-2 mt-2 focus:outline-none text-slate-500' value={ImageSearch} onChange={filteredSearch} placeholder='Search posts...'/>
         </form>
         {!imgList ? <img src={loader} className="w-8 sm:w-10 md:w-14 xl:w-20 mx-auto mt-8"/>:<div className='pt-8 w-11/12 mx-auto grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 max-w-7xl grid-cols-1'>
-          {imgList.map((img) => <ShowCase key={img._id} _id={img._id} photo={img.photo} name={img.name} prompt={img.prompt}/>)}
+          {imgList.map((img) => <ShowCase key={img._id} _id={img._id} photo={img.photo} name={img.name} prompt={img.prompt} Likes={img.Likes} userName={userName} likedPhotos={likedPhotos} setLikedPhotos={setLikedPhotos}/>)}
         </div>}
         <div className='my-4 sm:w-11/12 w-full mx-auto max-w-7xl flex justify-center'>
           <Pagination current={pageIndex} total={images} onChange={changePage} defaultPageSize={16}/>
