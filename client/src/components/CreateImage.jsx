@@ -1,15 +1,33 @@
 import React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {useNavigate} from "react-router-dom"
 import {preview, loader} from '../assets/index'
 import {surpriseMePrompts} from "../constants/index"
 
-const CreateImage = ({setImages, userName}) => {
+const CreateImage = ({setImages, userName, setLoggedIn, loggedIn}) => {
   const [prompt, setPrompt] = useState("")
   const [photo, setPhoto] = useState(preview)
   const [generatingImage, setgeneratingImage] = useState(false)
   const [sharingImage, setSharingImage] = useState(false)
   const navigate = useNavigate();
+
+  useEffect(()=>{
+    async function AuthorizeUser(){
+      const res = await fetch('https://ai-image-backend.netlify.app/.netlify/functions/api/Authorize',{
+        method:'POST',
+        headers:{
+          'x-access-token': localStorage.getItem('token'),
+          'Access-Control-Allow-Origin': '*'
+        }
+      })
+      const data = await res.json()
+      if(data.err) navigate('/login')
+    }
+    AuthorizeUser()
+    setTimeout(() => {
+      setLoggedIn(true)
+    }, 3000);
+  },[])
 
   const randomPrompt = () => {
     setPrompt(surpriseMePrompts[Math.floor(Math.random() * 50)])
@@ -23,7 +41,8 @@ const CreateImage = ({setImages, userName}) => {
           method:'POST',
           headers:{
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+            'Access-Control-Allow-Origin': '*',
+            'x-access-token': localStorage.getItem('token')
           },
           body: JSON.stringify({prompt: prompt, name:userName})
         })
@@ -65,7 +84,12 @@ const CreateImage = ({setImages, userName}) => {
   }
 
   return (
-    <div className='bg-[#f9fafe] border border-t-slate-200'>
+    <div className='bg-[#f9fafe] border border-t-slate-200 relative'>
+      {!loggedIn && 
+            <div className='bg-green-500 rounded w-48 absolute right-0'>
+              <p className='px-1.5 py-2 text-center text-white font-semibold'>Successfully Logged In</p>
+              <div className='w-full h-1 rounded bg-green-700 animate-progressbar'></div>
+            </div>}
       <div className='pt-8 w-11/12 mx-auto max-w-7xl'>
         <h1 className='font-bold text-3xl'>Create</h1>
         <p className='text-slate-500'>Generate an imaginative image through DALL-E AI and share it with the community</p>
