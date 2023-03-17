@@ -2,6 +2,7 @@ const { Configuration, OpenAIApi } = require("openai");
 const cloudinary = require('cloudinary').v2;
 const Image = require('../Models/Image')
 const User = require('../Models/User')
+const jwt = require('jsonwebtoken')
 
 require('dotenv').config()
 
@@ -12,13 +13,13 @@ cloudinary.config({
   api_secret: process.env.CLOUD_API_SECRET
 });
 
-const createImage = async (req, res) =>{
-  // OPENAI Configuration
-    const configuration = new Configuration({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-    const openai = new OpenAIApi(configuration);
+// OPENAI Configuration
+  const configuration = new Configuration({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+  const openai = new OpenAIApi(configuration);
 
+const createImage = async (req, res) =>{
     const response = await openai.createImage({
       prompt: req.body.prompt,
       n:1,
@@ -55,7 +56,9 @@ const signUp = async (req, res) => {
   const {email, password, name} = req.body
   try {
     const user = await User.Signup(email, password, name)
-    res.status(200).json({user})
+    const payload = {email: user.email}
+    const access_token = jwt.sign(payload, process.env.SECRET)
+    res.status(200).json({user:user, token:access_token})
   } catch (error) {
     res.status(406).json({error})
   }
@@ -65,10 +68,49 @@ const login = async (req, res) => {
   const {email, password} = req.body
   try {
     const user = await User.Login(email, password)
-    res.status(200).json({user})
+    const payload = {email: user.email}
+    const access_token = jwt.sign(payload, process.env.SECRET)
+    res.status(200).json({user:user, token:access_token})
   } catch (error) {
     res.status(406).json({error})
   }
 }
 
-module.exports = {createImage, shareImage, getImage, signUp, login}
+const tokenAuthorization = (req, res, next) => {
+  const Authtoken = req.headers["x-access-token"]
+
+  jwt.verify(Authtoken, process.env.SECRET, (err, user)=> {
+      if(err) return res.status(400).send("Invalid Token")
+      req.body.user = user
+      next()
+  })
+}
+
+const likeImage = async (req, res) => {
+  try {
+    const like = req.body.likes
+    const userName = req.body.userName
+    let updated_list = []
+    const update = await Image.updateOne({_id: req.params.id}, {Likes: like})
+    if(userName){
+      const user = await User.findOne({name: userName})
+      updated_list = user.likedImages.includes(req.params.id) ? user.likedImages.filter((a) => a != req.params.id) : [...user.likedImages,req.params.id]
+      const update_user = await User.updateOne({name: userName}, {likedImages: updated_list})
+    }
+    res.status(200).json({like, updated_list})
+    
+  } catch (error) {
+    res.status(406).json({error})
+  }
+}
+
+const likedImages = async (req, res) => {
+  try {
+    const user = await User.findOne({name: req.params.name})
+    res.status(200).json(user.likedImages)
+  } catch (error) {
+    res.status(406).json(error)
+  }
+}
+
+module.exports = {createImage, shareImage, getImage, signUp, login, tokenAuthorization, likeImage, likedImages}
